@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"fmt"
 
 	"movies_crud/data"
 	"movies_crud/structs"
@@ -10,8 +11,9 @@ import (
 	h "movies_crud/helper"
 )
 
+const PORT = "8000"
+
 type User = structs.User
-var user User
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	user := cookie.GetUserCookie(r)
@@ -32,5 +34,6 @@ func main() {
 	mux.HandleFunc("/signup", singing.SignUpHandler)
 	mux.HandleFunc("/login", singing.SignInHandler)
 	mux.HandleFunc("/logout", singing.LogoutHandler)
-	http.ListenAndServe(":8080", mux)
+	fmt.Printf("Listening on :%v\n", PORT)
+	http.ListenAndServe(":"+PORT, mux)
 }

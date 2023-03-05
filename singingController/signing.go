@@ -9,7 +9,6 @@ import (
 	"movies_crud/structs"
 	cookie "movies_crud/coockiesController"
 	h "movies_crud/helper"
-	"movies_crud/data"
 )
 
 type User = structs.User
@@ -24,16 +23,14 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		user = User{
+		user := User{
+			Name: sql.NullString{String: r.Form.Get("name"), Valid: true},
 			Email: sql.NullString{String: r.Form.Get("email"), Valid: true},
 			Password: sql.NullString{String: r.Form.Get("password"), Valid: true},
 		}
 
-		id, err := data.AddUser(user)
-		fmt.Println(id)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
+		user.Add()
+		cookie.SetUserCookie(w, user.ID)
 
 		http.Redirect(w, r, "./", http.StatusFound)
 	}
@@ -48,14 +45,14 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		userId, err := data.GetUserLogin(r.Form.Get("email"), r.Form.Get("password"))
+		userId, err := structs.GetUserIDLogin(r.Form.Get("email"), r.Form.Get("password"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		if userId == 0 {
 			fmt.Println(userId)
 		} else {
-			user, err := data.GetUser(userId)
+			user, err := structs.GetUser(userId)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}

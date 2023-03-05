@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"fmt"
 
-	"movies_crud/data"
 	"movies_crud/structs"
 )
 
@@ -30,7 +29,7 @@ func GetUserCookie(r *http.Request) *User {
 	if err == nil {
 		if cookie.Value != "" {
 			id, _ := strconv.Atoi(cookie.Value)
-			user, err := data.GetUser(id)
+			user, err := structs.GetUser(id)
 
 			if err != nil {
 				fmt.Println(err)
