@@ -20,7 +20,26 @@ func Init(dbName string) error {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
 		email TEXT NOT NULL,
-		password TEXT NOT NULL);
+		password TEXT NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS producers (
+		id INTEGER PRIMARY KEY,
+		name TEXT NOT NULL,
+		img TEXT,
+		description TEXT
+		);
+
+		CREATE TABLE IF NOT EXISTS movies(
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT,
+		year INTEGER,
+		country TEXT,
+		description TEXT,
+		img TEXT,
+		producer_id INTEGER,
+		FOREIGN KEY (producer_id) REFERENCES producers(id) ON DELETE CASCADE
+		);
 	`)
 	
 	return err

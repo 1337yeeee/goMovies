@@ -3,7 +3,6 @@ package coockiesController
 import (
 	"net/http"
 	"strconv"
-	"fmt"
 
 	"movies_crud/structs"
 )
@@ -24,7 +23,7 @@ func SetUserCookie(w http.ResponseWriter, userID int) http.ResponseWriter {
 	return w
 }
 
-func GetUserCookie(r *http.Request) *User {
+func GetUserCookie(w http.ResponseWriter, r *http.Request) *User {
 	cookie, err := r.Cookie("user_id")
 	if err == nil {
 		if cookie.Value != "" {
@@ -32,7 +31,7 @@ func GetUserCookie(r *http.Request) *User {
 			user, err := structs.GetUser(id)
 
 			if err != nil {
-				fmt.Println(err)
+				DelUserCookie(w)
 			}
 
 			return &user
@@ -44,7 +43,7 @@ func GetUserCookie(r *http.Request) *User {
 	}
 }
 
-func DelUserCookie(w http.ResponseWriter) http.ResponseWriter {
+func DelUserCookie(w http.ResponseWriter) {
 	cookie := http.Cookie{
 		Name:	"user_id",
 		Value:	"",
@@ -53,6 +52,4 @@ func DelUserCookie(w http.ResponseWriter) http.ResponseWriter {
 	}
 
 	http.SetCookie(w, &cookie)
-
-	return w
 }

@@ -12,7 +12,6 @@ import (
 )
 
 type User = structs.User
-var user User
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -65,6 +64,6 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	w = cookie.DelUserCookie(w)
+	cookie.DelUserCookie(w)
 	http.Redirect(w, r, "./", http.StatusFound)
 }

@@ -1,0 +1,74 @@
+{{ define "content" }}
+<style>
+.movie-container {
+	width: 66%;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.movie-container .row {
+	display: flex;
+	justify-content: space-between;
+	margin-right: 20px;
+	margin-left: 20px;
+	margin-top: 25px;
+}
+
+.movie-container .left-column {
+	flex: 33%;
+}
+
+.movie-container .right-column {
+	flex: 60%;
+}
+
+.movie-container .title {
+	font-size: 4rem;
+	font-weight: 600;
+	margin-bottom: 1rem;
+}
+
+.movie-container .description {
+	font-size: 1.2rem;
+}
+
+.movie-container .title span{
+	font-size: 3rem;
+	font-weight: 600;
+}
+</style>
+
+{{ if .Movie }}
+<div class="movie-container">
+	<!-- for poster and description -->
+	<div class="row">
+		<div class="left-column">
+			<img src="/assets/nophoto.png">
+		</div>
+		<div class="right-column">
+			<div class="title">
+				{{ .Movie.Name.Value }} <span>({{ .Movie.Year }})</span>
+			</div>
+			<p class="description">
+				{{ .Movie.Description.Value }}
+			</p>
+		</div>
+	</div>
+	<!-- for additional information -->
+	<div class="row">
+		<div class="left-column">
+			<div class="attribute">Год производства</div>
+			<div class="attribute">Страна производства</div>
+			<div class="attribute">Режисер</div>
+		</div>
+		<div class="right-column">
+			<div class="value">{{ .Movie.Year }}</div>
+			<div class="value">{{ .Movie.Country.Value }}</div>
+			<div class="value">{{ .Movie.Producer.Name.Value }}</div>
+		</div>
+	</div>
+</div>
+{{ else }}
+<h1>NOT FOUND</h1>
+{{ end }}
+{{ end }}

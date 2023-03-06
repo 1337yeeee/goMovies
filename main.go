@@ -8,24 +8,26 @@ import (
 	"movies_crud/structs"
 	singing "movies_crud/singingController"
 	cookie "movies_crud/coockiesController"
+	movie "movies_crud/moviesController"
 	h "movies_crud/helper"
 )
 
 const PORT = "8000"
 
 type User = structs.User
+type Response = structs.Response
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	user := cookie.GetUserCookie(r)
-	if user != nil {
-		h.Templating(w, "index", "base", *user)
-	} else {
-		h.Templating(w, "index", "base")
-	}
+	resp := Response{}
+	resp.User = cookie.GetUserCookie(w, r)
+	h.Templating(w, "index", "base", resp)
 }
 
 func main() {
-	data.Init("test.db")
+	err := data.Init("test.db")
+	if err != nil {
+		fmt.Printf("main:\n%v\n", err)
+	}
 	fs := http.FileServer(http.Dir("assets"))
 	mux := http.NewServeMux()
 
@@ -34,6 +36,7 @@ func main() {
 	mux.HandleFunc("/signup", singing.SignUpHandler)
 	mux.HandleFunc("/login", singing.SignInHandler)
 	mux.HandleFunc("/logout", singing.LogoutHandler)
+	mux.HandleFunc("/movie", movie.MovieIndexHandler)
 	fmt.Printf("Listening on :%v\n", PORT)
 	http.ListenAndServe(":"+PORT, mux)
 }
