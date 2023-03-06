@@ -31,3 +31,27 @@ func GetMovie(id int) (Movie, error) {
 
 	return movie, err
 }
+
+func GetMovies() ([]Movie, error) {
+	var movies []Movie
+
+	db := data.DBConnection()
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id, name, year, description, img FROM movies ORDER BY year DESC")
+	if err != nil {
+		return movies, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		movie := Movie{}
+		err := rows.Scan(&movie.ID, &movie.Name, &movie.Year, &movie.Description, &movie.Img)
+		if err != nil {
+			return movies, err
+		}
+		movies = append(movies, movie)
+	}
+
+	return movies, nil
+}

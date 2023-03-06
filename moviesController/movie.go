@@ -27,3 +27,16 @@ func MovieIndexHandler(w http.ResponseWriter, r *http.Request) {
 	
 	h.Templating(w, "movie", "base", resp)
 }
+
+func MoviesIndexHandler(w http.ResponseWriter, r *http.Request) {
+	resp := Response{}
+	resp.User = cookie.GetUserCookie(w, r)
+
+	movies, err := structs.GetMovies()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	resp.Movies = movies
+
+	h.Templating(w, "movies", "base", resp)
+}

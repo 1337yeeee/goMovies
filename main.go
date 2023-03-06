@@ -37,6 +37,7 @@ func main() {
 	mux.HandleFunc("/login", singing.SignInHandler)
 	mux.HandleFunc("/logout", singing.LogoutHandler)
 	mux.HandleFunc("/movie", movie.MovieIndexHandler)
+	mux.HandleFunc("/movies", movie.MoviesIndexHandler)
 	fmt.Printf("Listening on :%v\n", PORT)
 	http.ListenAndServe(":"+PORT, mux)
 }

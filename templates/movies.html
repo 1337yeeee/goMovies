@@ -1,0 +1,82 @@
+{{ define "content" }}
+<style>
+.movies-container {
+	width: 66%;
+	margin-right: auto;
+	margin-left: auto;
+	margin-top: 60px;
+}
+
+.movie-card {
+	display: flex;
+	height: 320px;
+	border: 3px solid dodgerblue;
+	border-radius: 15px;
+	margin-bottom: 20px;
+	padding: 15px;
+}
+
+.poster img {
+	height: 100%;
+}
+
+.text {
+	flex: 1;
+	margin-left: 30px;
+	position: relative;
+}
+
+.text .title {
+	font-size: 3rem;
+	font-weight: 500;
+}
+
+.text .title span {
+	font-size: 2rem;
+	font-weight: normal;
+}
+
+.text .description {
+	font-size: 1.5rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 4; /* number of lines to show */
+			line-clamp: 4; 
+	-webkit-box-orient: vertical;
+}
+
+.text .rating {
+	position: absolute;
+	bottom: 0;
+	font-size: 2.5rem;
+	letter-spacing: 4px;
+	word-spacing: 1rem;
+}
+
+.text .rating span {
+	color: green;
+	font-weight: 600;
+	letter-spacing: 1px;
+}
+</style>
+
+<div class="movies-container">
+	{{ range $movie := .Movies }}
+	<div class="movie-card">
+		<div class="poster">
+			<img src="/assets/nophoto.png">
+		</div>
+		<div class="text">
+			<div class="title">
+				{{ $movie.Name.Value }} <span class="year">({{ $movie.Year }})</span>
+			</div>
+			<div class="description">
+				{{ $movie.Description.Value }}
+			</div>
+			<div class="rating">Rating <span>7.1</span></div>
+		</div>
+	</div>
+	{{ end }}
+</div>
+{{ end }}
