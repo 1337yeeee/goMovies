@@ -28,10 +28,16 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			Password: sql.NullString{String: r.Form.Get("password"), Valid: true},
 		}
 
-		user.Add()
-		cookie.SetUserCookie(w, user.ID)
+		res := user.Add()
+		if res {
+			cookie.SetUserCookie(w, user.ID)
 
-		http.Redirect(w, r, "./", http.StatusFound)
+			http.Redirect(w, r, "./", http.StatusFound)
+		} else {
+			resp := structs.Response{}
+			resp.Message = "user already exists"
+			h.Templating(w, "signup", "sign_layout", resp)
+		}
 	}
 }
 

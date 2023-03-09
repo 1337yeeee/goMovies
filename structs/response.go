@@ -5,4 +5,6 @@ type Response struct {
 	Movie *Movie
 	Producer *Producer
 	Movies []Movie
+	IsMovieWatched bool
+	Message string
 }

@@ -10,10 +10,9 @@ type User struct {
 	Name sql.NullString `sql:"name"`
 	Email sql.NullString `sql:"email"`
 	Password sql.NullString `sql:"password"`
-	Movies_watched []MovieWatched `sql:"movies_watched"`
 }
 
-func (user *User) Add() {
+func (user *User) Add() bool {
 	db := data.DBConnection()
 	defer db.Close()
 
@@ -22,7 +21,7 @@ func (user *User) Add() {
 		VALUES (?, ?, ?)`, user.Name, user.Email, user.Password)
 
 	if err != nil {
-		panic(err)
+		return false
 	}
 
 	id, err := result.LastInsertId()
@@ -32,6 +31,7 @@ func (user *User) Add() {
 	}
 
 	user.ID = int(id)
+	return true
 }
 
 func GetUser(id int) (User, error) {

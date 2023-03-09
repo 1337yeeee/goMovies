@@ -14,6 +14,25 @@
 	border-radius: 15px;
 	margin-bottom: 20px;
 	padding: 15px;
+	text-decoration: none;
+	color: var(--bs-body-color);
+}
+
+.movie-card:hover {
+	text-decoration: none;
+	color: var(--bs-body-color);
+	border: 3px solid #0E82B7;
+}
+
+a:visited {
+	text-decoration: none;
+	color: var(--bs-body-color);
+}
+
+a:visited:hover {
+	text-decoration: none;
+	color: var(--bs-body-color);
+	border: 3px solid #0E82B7;
 }
 
 .poster img {
@@ -46,26 +65,50 @@
 	-webkit-box-orient: vertical;
 }
 
-.text .rating {
-	position: absolute;
-	bottom: 0;
-	font-size: 2.5rem;
-	letter-spacing: 4px;
-	word-spacing: 1rem;
-}
-
 .text .rating span {
 	color: green;
 	font-weight: 600;
 	letter-spacing: 1px;
 }
+
+.text .userRating span {
+	font-style: italic;
+	color: lightgray;
+	margin-left: 1rem;
+}
+
+.text .bottom {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: flex-end;
+	padding: 10px 20px;
+}
+
+.text .bottom .rating {
+	font-size: 1.5rem;
+}
+
+.text .bottom .userRating {
+	font-size: 1rem;
+}
+
 </style>
 
 <div class="movies-container">
+	{{ if .User }}
 	{{ range $movie := .Movies }}
-	<div class="movie-card">
+	<a class="movie-card" href="movie?id={{ $movie.ID }}">
 		<div class="poster">
+			{{ if eq $movie.Img.Value "" }}
 			<img src="/assets/nophoto.png">
+			{{ else }}
+			<img src={{$movie.Img.Value}}>
+			{{ end }}
 		</div>
 		<div class="text">
 			<div class="title">
@@ -74,9 +117,36 @@
 			<div class="description">
 				{{ $movie.Description.Value }}
 			</div>
-			<div class="rating">Rating <span>7.1</span></div>
+			<div class="bottom">
+				<div class="rating">Rating <span>{{ $movie.Rating }}</span></div>
+				<div class="userRating">{{ $movie.UserRating }} <span>Не просмотрено</span></div>
+			</div>
 		</div>
-	</div>
+	</a>
+	{{ end }}
+	{{ else }}
+	{{ range $movie := .Movies }}
+	<a class="movie-card" href="movie?id={{ $movie.ID }}">
+		<div class="poster">
+			{{ if eq $movie.Img.Value "" }}
+			<img src="/assets/nophoto.png">
+			{{ else }}
+			<img src={{$movie.Img.Value}}>
+			{{ end }}
+		</div>
+		<div class="text">
+			<div class="title">
+				{{ $movie.Name.Value }} <span class="year">({{ $movie.Year }})</span>
+			</div>
+			<div class="description">
+				{{ $movie.Description.Value }}
+			</div>
+			<div class="bottom">
+				<div class="rating">Rating <span>7.1</span></div>
+			</div>
+		</div>
+	</a>
+	{{ end }}
 	{{ end }}
 </div>
 {{ end }}

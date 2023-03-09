@@ -26,8 +26,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	err := data.Init("test.db")
 	if err != nil {
-		fmt.Printf("main:\n%v\n", err)
+		fmt.Printf("main1:\n%v\n", err)
 	}
+
 	fs := http.FileServer(http.Dir("assets"))
 	mux := http.NewServeMux()
 
@@ -38,6 +39,8 @@ func main() {
 	mux.HandleFunc("/logout", singing.LogoutHandler)
 	mux.HandleFunc("/movie", movie.MovieIndexHandler)
 	mux.HandleFunc("/movies", movie.MoviesIndexHandler)
+	mux.HandleFunc("/rate", movie.Rated)
+	mux.HandleFunc("/watched", movie.Watched)
 	fmt.Printf("Listening on :%v\n", PORT)
 	http.ListenAndServe(":"+PORT, mux)
 }

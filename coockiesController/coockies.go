@@ -43,6 +43,21 @@ func GetUserCookie(w http.ResponseWriter, r *http.Request) *User {
 	}
 }
 
+func GetUserCookieIDonly(r *http.Request) int {
+	cookie, err := r.Cookie("user_id")
+	if err == nil {
+		if cookie.Value != "" {
+			id, _ := strconv.Atoi(cookie.Value)
+
+			return int(id)
+		} else {
+			return 0
+		}
+	} else {
+		return 0
+	}
+}
+
 func DelUserCookie(w http.ResponseWriter) {
 	cookie := http.Cookie{
 		Name:	"user_id",

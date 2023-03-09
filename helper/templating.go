@@ -1,4 +1,4 @@
-package helpep
+package helper
 
 import (
 	"html/template"
@@ -11,7 +11,7 @@ const tplPath = "templates/"
 func Templating(w http.ResponseWriter, tmplName string, layout string, args ...any) {
 	buf := &bytes.Buffer{}
 
-	tmpl, err := template.New(layout).ParseFiles(tplPath+tmplName+".html", tplPath+layout+".html")
+	tmpl, err := template.New(layout).Funcs(template.FuncMap{"N": N}).ParseFiles(tplPath+tmplName+".html", tplPath+layout+".html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

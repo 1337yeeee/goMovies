@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"fmt"
 	"database/sql"
 	"movies_crud/data"
 )
@@ -12,7 +13,9 @@ type Movie struct {
 	Country sql.NullString `sql:"country"`
 	Description sql.NullString `sql:"description"`
 	Img sql.NullString `sql:"img"`
-	Producer Producer `sql:"producer"`
+	Producer Producer
+	Rating string
+	UserRating int
 }
 
 func GetMovie(id int) (Movie, error) {
@@ -32,7 +35,7 @@ func GetMovie(id int) (Movie, error) {
 	return movie, err
 }
 
-func GetMovies() ([]Movie, error) {
+func GetMovies(user_id int) ([]Movie, error) {
 	var movies []Movie
 
 	db := data.DBConnection()
@@ -50,8 +53,36 @@ func GetMovies() ([]Movie, error) {
 		if err != nil {
 			return movies, err
 		}
+		movie.CountRating()
+		if user_id != 0 {
+			movie.SetUserRating(user_id)
+		}
 		movies = append(movies, movie)
 	}
 
 	return movies, nil
+}
+
+func (movie *Movie) CountRating() {
+	db := data.DBConnection()
+	defer db.Close()
+
+	row := db.QueryRow("SELECT AVG(rating) FROM user_movie_ratings WHERE movie_id = ? AND rating > 0", movie.ID)
+
+	var rating float64
+	row.Scan(&rating)
+	
+	movie.Rating = fmt.Sprintf("%.1f", rating)
+}
+
+func (movie *Movie) SetUserRating(user_id int) {
+	db := data.DBConnection()
+	defer db.Close()
+
+	row := db.QueryRow("SELECT rating FROM user_movie_ratings WHERE movie_id = ? AND user_id = ?", movie.ID, user_id)
+
+	var rating int
+	row.Scan(&rating)
+	
+	movie.UserRating = rating
 }

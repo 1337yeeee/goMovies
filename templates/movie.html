@@ -36,6 +36,32 @@
 	font-size: 3rem;
 	font-weight: 600;
 }
+
+.userButtons {
+	margin-top: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.userButtons form * {
+	margin: 5px;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.userButtons form {
+	text-align: center;
+}
+
+.userButtons form button[type="submit"] {
+	
+}
+
+.userButtons button {
+
+}
 </style>
 
 {{ if .Movie }}
@@ -43,7 +69,11 @@
 	<!-- for poster and description -->
 	<div class="row">
 		<div class="left-column">
+			{{ if eq .Movie.Img.Value "" }}
 			<img src="/assets/nophoto.png">
+			{{ else }}
+			<img src={{.Movie.Img.Value}}>
+			{{ end }}
 		</div>
 		<div class="right-column">
 			<div class="title">
@@ -67,7 +97,75 @@
 			<div class="value">{{ .Movie.Producer.Name.Value }}</div>
 		</div>
 	</div>
+	{{ if .User }}
+		<div class="userButtons">
+			<form onsubmit="rateMovie(); return false;" class="movie-rating-form">
+				<div class="form-group">
+					<select name="rating" id="rating" class="form-control">
+						<option value="">Select a rating</option>
+						{{ range $i := N 1 10 }}
+							<option value="{{ $i }}">{{ $i }}</option>
+						{{ end }}
+					</select>
+					<span id="youRated">You rated: {{ .Movie.UserRating }}</span>
+				</div>
+				<button type="submit" class="btn btn-primary">Rate</button>
+			</form>
+			{{ if .IsMovieWatched }}
+			<button class="watched btn btn-primary" id="watched">Watched</button>
+			{{ else }}
+			<button class="watched btn btn-warning" id="watched">Unwatched</button>
+			{{ end }}
+		</div>
+	{{ end }}
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#watched').click(function() {
+		$.ajax({
+			url: '/watched?movie_id={{ .Movie.ID }}',
+			method: 'POST',
+			success: function(response) {
+				console.log('Movie watched:', response);
+				$('.watched').toggleClass('btn-primary btn-warning');
+				if (response.watched) {
+					$('#watched').text('Watched');
+				} else {
+					$('#watched').text('Unwatched');
+				}
+			}
+		});
+	});
+});
+
+function rateMovie() {
+	// Get the movie ID from the URL
+	var urlParams = new URLSearchParams(window.location.search);
+	var movieId = urlParams.get('id');
+
+	// Get the rating from the form
+	var rating = document.getElementById("rating").value;
+
+	$.ajax({
+		url: '/rate',
+		method: 'POST',
+		data: {
+			movie_id: movieId,
+			rating: rating
+		},
+		success: function(response) {
+			console.log('Movie rated:', response);
+			$('#youRated').text(response.rating);
+		},
+		error: function(xhr, status, error) {
+			console.error('Error:', error);
+		}
+	});
+}
+
+</script>
 {{ else }}
 <h1>NOT FOUND</h1>
 {{ end }}
