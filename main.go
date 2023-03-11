@@ -38,6 +38,7 @@ func main() {
 	mux.HandleFunc("/login", singing.SignInHandler)
 	mux.HandleFunc("/logout", singing.LogoutHandler)
 	mux.HandleFunc("/movie", movie.MovieIndexHandler)
+	mux.HandleFunc("/director", movie.DirectorIndexHandler)
 	mux.HandleFunc("/movies", movie.MoviesIndexHandler)
 	mux.HandleFunc("/rate", movie.Rated)
 	mux.HandleFunc("/watched", movie.Watched)

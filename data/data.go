@@ -26,7 +26,7 @@ func Init(dbName string) error {
 			password TEXT NOT NULL
 		);
 
-		CREATE TABLE IF NOT EXISTS producers (
+		CREATE TABLE IF NOT EXISTS directors (
 			id INTEGER PRIMARY KEY,
 			name TEXT NOT NULL,
 			img TEXT,
@@ -40,8 +40,8 @@ func Init(dbName string) error {
 			country TEXT,
 			description TEXT,
 			img TEXT,
-			producer_id INTEGER,
-			FOREIGN KEY (producer_id) REFERENCES producers(id) ON DELETE CASCADE
+			director_id INTEGER,
+			FOREIGN KEY (director_id) REFERENCES directors(id) ON DELETE CASCADE
 		);
 
 		CREATE TABLE IF NOT EXISTS user_movie_ratings (

@@ -1,0 +1,61 @@
+{{ define "content" }}
+<style>
+.movie-container {
+	width: 66%;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.movie-container .row {
+	display: flex;
+	justify-content: space-between;
+	margin-right: 20px;
+	margin-left: 20px;
+	margin-top: 25px;
+}
+
+.movie-container .left-column {
+	flex: 33%;
+}
+
+.movie-container .right-column {
+	flex: 60%;
+}
+
+.movie-container .title {
+	font-size: 4rem;
+	font-weight: 600;
+	margin-bottom: 1rem;
+}
+
+.movie-container .description {
+	font-size: 1.2rem;
+}
+</style>
+
+{{ if .Director }}
+<div class="movie-container">
+	<!-- for poster and description -->
+	<div class="row">
+		<div class="left-column">
+			{{ if eq .Director.Img.Value "" }}
+			<img src="/assets/nophoto.png">
+			{{ else }}
+			<img src={{.Director.Img.Value}}>
+			{{ end }}
+		</div>
+		<div class="right-column">
+			<div class="title">
+				{{ .Director.Name.Value }}
+			</div>
+			<p class="description">
+				{{ .Director.Description.Value }}
+			</p>
+		</div>
+	</div>
+</div>
+
+{{ else }}
+<h1>NOT FOUND</h1>
+{{ end }}
+{{ end }}

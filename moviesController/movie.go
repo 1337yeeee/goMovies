@@ -16,6 +16,13 @@ type Response = structs.Response
 
 func MovieIndexHandler(w http.ResponseWriter, r *http.Request) {
 	movie_idSTR := r.URL.Query().Get("id")
+	if movie_idSTR == "" {
+		response := structs.Response{}
+		response.User = cookie.GetUserCookie(w, r)
+		response.Title = "NOT FOUND"
+		h.Templating(w, "notfound", "base", response)
+		return
+	}
 
 	movie_id, _ := strconv.Atoi(movie_idSTR)
 	movie, err := structs.GetMovie(movie_id)
@@ -27,8 +34,12 @@ func MovieIndexHandler(w http.ResponseWriter, r *http.Request) {
 	resp := Response{}
 	resp.Movie = &movie
 	resp.User = cookie.GetUserCookie(w, r)
-	resp.Movie.SetUserRating(resp.User.ID)
-	resp.IsMovieWatched = structs.IsMovieWatched(resp.User.ID, movie_id)
+	if resp.User != nil {
+		resp.Movie.SetUserRating(resp.User.ID)
+		resp.IsMovieWatched = structs.IsMovieWatched(resp.User.ID, movie_id)
+	} else {
+		resp.Movie.SetUserRating(0)
+	}
 	
 	h.Templating(w, "movie", "base", resp)
 }
@@ -37,7 +48,14 @@ func MoviesIndexHandler(w http.ResponseWriter, r *http.Request) {
 	resp := Response{}
 	resp.User = cookie.GetUserCookie(w, r)
 
-	movies, err := structs.GetMovies(resp.User.ID)
+	var movies []Movie
+	var err error
+
+	if resp.User != nil {
+		movies, err = structs.GetMovies(resp.User.ID)
+	} else {
+		movies, err = structs.GetMovies(0)
+	}
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

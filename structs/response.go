@@ -3,8 +3,9 @@ package structs
 type Response struct {
 	User *User
 	Movie *Movie
-	Producer *Producer
+	Director *Director
 	Movies []Movie
 	IsMovieWatched bool
 	Message string
+	Title string
 }
