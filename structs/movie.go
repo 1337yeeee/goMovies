@@ -2,6 +2,8 @@ package structs
 
 import (
 	"fmt"
+	"log"
+
 	"database/sql"
 	"movies_crud/data"
 )
@@ -27,6 +29,9 @@ func GetMovie(id int) (Movie, error) {
 	movie := Movie{}
 	var director_id int
 	err := row.Scan(&movie.ID, &movie.Name, &movie.Year, &movie.Description, &movie.Img, &movie.Country, &director_id)
+	if err != nil {
+		log.Printf("structs.GetMovie(); row.Scan()| %v\n", err)
+	}
 	if director_id != 0 {
 		director, _ := GetDirector(director_id)
 		movie.Director = director
@@ -43,6 +48,7 @@ func GetMovies(user_id int) ([]Movie, error) {
 
 	rows, err := db.Query("SELECT id, name, year, description, img FROM movies ORDER BY year DESC")
 	if err != nil {
+		log.Printf("structs.GetMovies(); db.Query(`SELECT`)| %v\n", err)
 		return movies, err
 	}
 	defer rows.Close()
@@ -51,6 +57,7 @@ func GetMovies(user_id int) ([]Movie, error) {
 		movie := Movie{}
 		err := rows.Scan(&movie.ID, &movie.Name, &movie.Year, &movie.Description, &movie.Img)
 		if err != nil {
+			log.Printf("structs.GetMovies(); rows.Scan()| %v\n", err)
 			return movies, err
 		}
 		movie.CountRating()

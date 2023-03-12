@@ -3,7 +3,7 @@ package data
 import (
 	"database/sql"
 	"io/ioutil"
-	// "os"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -14,6 +14,7 @@ func Init(dbName string) error {
 	DbName = dbName
 	db, err := sql.Open("sqlite3", DbName)
 	if err != nil {
+		log.Printf("data.Init(); sql.Open()| %v\n", err)
 		return err
 	}
 	defer db.Close()
@@ -56,12 +57,16 @@ func Init(dbName string) error {
 
 	`)
 	
+	if err != nil {
+		log.Printf("data.Init(); db.Exec(`!ALL!`)| %v\n", err)
+	}
 	return err
 }
 
 func DBConnection() *sql.DB {
 	db, err := sql.Open("sqlite3", DbName)
 	if err != nil {
+		log.Printf("data.DBConnection(); sql.Open()| %v\n", err)
 		panic(err)
 	}
 	return db
@@ -74,12 +79,14 @@ func ExecuteSQLFile(fileName string) error {
 	// Read SQL file
 	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
+		log.Printf("data.ExecuteSQLFile(); ioutil.ReadFile()| %v\n", err)
 		return err
 	}
 
 	// Execute SQL statements
 	_, err = db.Exec(string(content))
 	if err != nil {
+		log.Printf("data.ExecuteSQLFile(); db.Exec(content)| %v\n", err)
 		return err
 	}
 

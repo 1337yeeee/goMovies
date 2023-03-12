@@ -1,6 +1,7 @@
 package moviesController
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -22,6 +23,7 @@ func DirectorIndexHandler(w http.ResponseWriter, r *http.Request) {
 	director_id, _ := strconv.Atoi(director_idSTR)
 	director, err := structs.GetDirector(director_id)
 	if err != nil {
+		log.Printf("moviesController.Rated(); structs.GetDirector()| %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 

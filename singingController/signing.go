@@ -20,12 +20,12 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err := r.ParseForm()
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("singingController.SignUpHandler(); r.ParseForm()| %v\n", err)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Form.Get("password")), bcrypt.DefaultCost)
 		if err != nil {
-			// Handle hashing error
+			log.Printf("singingController.SignUpHandler(); bcrypt.GenerateFromPassword()| %v\n", err)
 		}
 
 		user := User{
@@ -53,11 +53,12 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("singingController.SignInHandler(); r.ParseForm()| %v\n", err)
 		}
 
 		userId, err := structs.GetUserIDLogin(r.Form.Get("email"), r.Form.Get("password"))
 		if err != nil {
+			log.Printf("singingController.SignInHandler(); structs.GetUserIDLogin()| %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		if userId == 0 {
@@ -65,6 +66,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			user, err := structs.GetUser(userId)
 			if err != nil {
+				log.Printf("singingController.SignInHandler(); structs.GetUser()| %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 

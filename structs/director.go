@@ -1,6 +1,8 @@
 package structs
 
 import (
+	"log"
+
 	"database/sql"
 	"movies_crud/data"
 )
@@ -20,6 +22,9 @@ func GetDirector(id int) (Director, error) {
 
 	director := Director{}
 	err := row.Scan(&director.ID, &director.Name, &director.Img, &director.Description)
+	if err != nil {
+		log.Printf("structs.GetDirector(); row.Scan()| %v\n", err)
+	}
 
 	return director, err
 }

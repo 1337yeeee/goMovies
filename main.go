@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 	"fmt"
+	"log"
+	"os"
 
 	"movies_crud/data"
 	"movies_crud/structs"
@@ -23,10 +25,22 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	h.Templating(w, "index", "base", resp)
 }
 
+func setLogger() {
+	f, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer f.Close()
+
+    log.SetOutput(f)
+}
+
 func main() {
+	setLogger()
+
 	err := data.Init("test.db")
 	if err != nil {
-		fmt.Printf("main1:\n%v\n", err)
+		log.Printf("main; data.Init()| %v\n", err)
 	}
 
 	fs := http.FileServer(http.Dir("assets"))

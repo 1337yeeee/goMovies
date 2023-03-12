@@ -24,9 +24,13 @@ func MovieIndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	movie_id, _ := strconv.Atoi(movie_idSTR)
+	movie_id, err := strconv.Atoi(movie_idSTR)
+	if err != nil {
+		log.Printf("moviesController.MovieIndexHandler(); strconv.Atoi()| %v\n", err)
+	}
 	movie, err := structs.GetMovie(movie_id)
 	if err != nil {
+		log.Printf("moviesController.MovieIndexHandler(); structs.GetMovie()| %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	movie.CountRating()
@@ -57,6 +61,7 @@ func MoviesIndexHandler(w http.ResponseWriter, r *http.Request) {
 		movies, err = structs.GetMovies(0)
 	}
 	if err != nil {
+		log.Printf("moviesController.MoviesIndexHandler(); structs.GetMovies(isUser=%b)| %v\n", resp.User != nil, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	resp.Movies = movies
@@ -70,12 +75,14 @@ func Watched(w http.ResponseWriter, r *http.Request) {
 	movieIDStr := r.URL.Query().Get("movie_id")
 	movieID, err := strconv.Atoi(movieIDStr)
 	if err != nil {
+		log.Printf("moviesController.Watched(); strconv.Atoi()| %v\n", err)
 		http.Error(w, "Invalid movie ID", http.StatusBadRequest)
 		return
 	}
 
 	watched, err := structs.DealWithWatched(userID, movieID)
 	if err != nil {
+		log.Printf("moviesController.Watched(); structs.DealWithWatched()| %v\n", err)
 		http.Error(w, "Failed to handle watched status", http.StatusInternalServerError)
 		return
 	}
@@ -92,15 +99,17 @@ func Watched(w http.ResponseWriter, r *http.Request) {
 func Rated(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("moviesController.Rated(); r.ParseForm()| %v\n", err)
 	}
 
 	movie_id, err := strconv.Atoi(r.Form.Get("movie_id"))
 	if err != nil {
+		log.Printf("moviesController.Rated(); strconv.Atoi(movie_id)| %v\n", err)
 		return
 	}
 	rating, err := strconv.Atoi(r.Form.Get("rating"))
 	if err != nil {
+		log.Printf("moviesController.Rated(); strconv.Atoi(rating)| %v\n", err)
 		return 
 	}
 
@@ -109,6 +118,7 @@ func Rated(w http.ResponseWriter, r *http.Request) {
 	structs.SetMovieRating(userID, movie_id, rating)
 
 	if err != nil {
+		log.Printf("moviesController.Rated(); structs.SetMovieRating()| %v\n", err)
 		return 
 	}
 
