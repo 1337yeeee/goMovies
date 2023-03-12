@@ -6,6 +6,7 @@ import (
 	"log"
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
 	"movies_crud/structs"
 	cookie "movies_crud/coockiesController"
 	h "movies_crud/helper"
@@ -22,10 +23,15 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Form.Get("password")), bcrypt.DefaultCost)
+		if err != nil {
+			// Handle hashing error
+		}
+
 		user := User{
 			Name: sql.NullString{String: r.Form.Get("name"), Valid: true},
 			Email: sql.NullString{String: r.Form.Get("email"), Valid: true},
-			Password: sql.NullString{String: r.Form.Get("password"), Valid: true},
+			Password: hashedPassword,
 		}
 
 		res := user.Add()

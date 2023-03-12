@@ -3,13 +3,14 @@ package structs
 import (
 	"database/sql"
 	"movies_crud/data"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	ID int `sql:"id"`
 	Name sql.NullString `sql:"name"`
 	Email sql.NullString `sql:"email"`
-	Password sql.NullString `sql:"password"`
+	Password []byte `sql:"password"`
 }
 
 func (user *User) Add() bool {
@@ -50,10 +51,17 @@ func GetUserIDLogin(email string, password string) (int, error) {
 	db := data.DBConnection()
 	defer db.Close()
 
-	row := db.QueryRow("SELECT id FROM users WHERE email = ? AND password = ?", email, password)
+
+	row := db.QueryRow("SELECT id, password FROM users WHERE email = ?", email)
 
 	var id int
-	err := row.Scan(&id)
+	var hashedPassword string
+	err := row.Scan(&id, &hashedPassword)
+	if err != nil {
+		return 0, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	if err != nil {
 		return 0, err
 	}
