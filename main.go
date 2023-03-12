@@ -12,9 +12,9 @@ import (
 	cookie "movies_crud/coockiesController"
 	movie "movies_crud/moviesController"
 	h "movies_crud/helper"
-)
 
-const PORT = "8000"
+	"github.com/joho/godotenv"
+)
 
 type User = structs.User
 type Response = structs.Response
@@ -38,10 +38,20 @@ func setLogger() {
 func main() {
 	setLogger()
 
-	err := data.Init("test.db")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+	dbName := os.Getenv("DB_FILE_NAME")
+	if dbName == "" {
+		dbName = "tmp.db"
+	}
+
+	err = data.Init(dbName)
 	if err != nil {
 		log.Printf("main; data.Init()| %v\n", err)
 	}
+
 
 	fs := http.FileServer(http.Dir("assets"))
 	mux := http.NewServeMux()
@@ -56,6 +66,11 @@ func main() {
 	mux.HandleFunc("/movies", movie.MoviesIndexHandler)
 	mux.HandleFunc("/rate", movie.Rated)
 	mux.HandleFunc("/watched", movie.Watched)
-	fmt.Printf("Listening on :%v\n", PORT)
-	http.ListenAndServe(":"+PORT, mux)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8000"
+	}
+	fmt.Printf("Listening on :%v\n", port)
+	http.ListenAndServe(":"+port, mux)
 }
