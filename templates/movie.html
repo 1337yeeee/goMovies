@@ -55,12 +55,14 @@
 	text-align: center;
 }
 
-.userButtons form button[type="submit"] {
-	
+.director-link {
+	color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));
 }
-
-.userButtons button {
-
+.director-link:hover {
+	color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));
+}
+.director-link:visited {
+	color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));
 }
 </style>
 
@@ -94,7 +96,7 @@
 		<div class="right-column">
 			<div class="value">{{ .Movie.Year }}</div>
 			<div class="value">{{ .Movie.Country.Value }}</div>
-			<div class="value">{{ .Movie.Director.Name.Value }}</div>
+			<div class="value"><a class="director-link" href="director?id={{ .Movie.Director.ID }}">{{ .Movie.Director.Name.Value }}</a></div>
 		</div>
 	</div>
 	{{ if .User }}

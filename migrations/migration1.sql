@@ -5,12 +5,12 @@ INSERT INTO users (name, email, password) VALUES ('John Doe', 'john.doe@example.
 INSERT INTO users (name, email, password) VALUES ('Jane Smith', 'jane.smith@example.com', 'password123');
 
 -- Add a new director to the table
-INSERT INTO directors (id, name, img, description) VALUES (1, 'Steven Spielberg', 'https://m.media-amazon.com/images/M/MV5BMTY1NjAzNzE1MV5BMl5BanBnXkFtZTYwNTk0ODc0._V1_UX67_CR0,0,67,98_AL_.jpg', 'American film director, producer, and screenwriter');
+INSERT INTO directors (id, name, img, description) VALUES (1, 'Steven Spielberg', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Steven_Spielberg_by_Gage_Skidmore.jpg/220px-Steven_Spielberg_by_Gage_Skidmore.jpg', 'American film director, producer, and screenwriter');
 
 -- Add another director to the table
-INSERT INTO directors (id, name, img, description) VALUES (2, 'Christopher Nolan', 'https://m.media-amazon.com/images/M/MV5BNjE3NDQyOTYyMV5BMl5BanBnXkFtZTcwODcyODU2Mw@@._V1_UY98_CR2,0,67,98_AL_.jpg', 'British film director, producer, and screenwriter');
+INSERT INTO directors (id, name, img, description) VALUES (2, 'Christopher Nolan', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Christopher_Nolan_Cannes_2018.jpg/220px-Christopher_Nolan_Cannes_2018.jpg', 'British film director, producer, and screenwriter');
 
-INSERT INTO directors (id, name, img, description) VALUES (3, 'Quentin Tarantino', 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Quentin_Tarantino_by_Gage_Skidmore.jpg/220px-Quentin_Tarantino_by_Gage_Skidmore.jpg', 'Quentin Jerome Tarantino is an American filmmaker and screenwriter, known for his nonlinear storytelling and stylized violence.');
+INSERT INTO directors (id, name, img, description) VALUES (3, 'Quentin Tarantino', 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Quentin_Tarantino_by_Gage_Skidmore.jpg/220px-Quentin_Tarantino_by_Gage_Skidmore.jpg', 'Quentin Jerome Tarantino is an American filmmaker and screenwriter, known for his nonlinear storytelling and stylized violence.');
 
 -- Add a new movie to the table
 INSERT INTO movies (name, year, country, description, img, director_id) VALUES ('Jurassic Park', 1993, 'USA', 'A theme park suffers a major power breakdown that allows its cloned dinosaur exhibits to run amok', 'https://upload.wikimedia.org/wikipedia/en/e/e7/Jurassic_Park_poster.jpg', 1);
