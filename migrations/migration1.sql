@@ -47,3 +47,9 @@ VALUES ('Kill Bill: Vol. 1', 2003, 'United States', 'After awakening from a four
 -- Migration 3: Add the movie "Kill Bill: Vol. 2"
 INSERT INTO movies (name, year, country, description, img, director_id)
 VALUES ('Kill Bill: Vol. 2', 2004, 'United States', 'The Bride continues her quest of vengeance against her former boss and lover Bill, the reclusive bouncer Budd, and the treacherous, one-eyed Elle.', 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c4/Kill_Bill_Volume_2.png/220px-Kill_Bill_Volume_2.png', 3);
+
+INSERT INTO movies (name, year, country, description, img, director_id)
+VALUES ('Reservoir Dogs', 1992, 'United States', 'After a simple jewelry heist goes terribly wrong, the surviving criminals begin to suspect that one of them is a police informant.', 'https://upload.wikimedia.org/wikipedia/en/f/f6/Reservoir_dogs_ver1.jpg', 3);
+
+INSERT INTO movies (name, year, country, description, img, director_id)
+VALUES ('Inglourious Basterds', 2009, 'United States', "In Nazi-occupied France during World War II, a plan to assassinate Nazi leaders by a group of Jewish U.S. soldiers coincides with a theatre owner's vengeful plans for the same.", 'https://upload.wikimedia.org/wikipedia/en/c/c3/Inglourious_Basterds_poster.jpg', 3);

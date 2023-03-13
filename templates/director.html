@@ -31,6 +31,29 @@
 .movie-container .description {
 	font-size: 1.2rem;
 }
+
+.movie-container .movies {
+	display: flex;
+	flex-wrap: wrap;
+	margin: 25px 0;
+}
+
+.movie-container .movie {
+	flex: 0 0 calc(33.33% - 20px);
+	margin: 0 10px 25px 10px;
+	padding: 10px;
+	background-color: #f2f2f2;
+}
+
+.movie-container .movie h2 {
+	font-size: 1.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.movie-container .movie p {
+	font-size: 1rem;
+	margin-bottom: 0;
+}
 </style>
 
 {{ if .Director }}
@@ -52,6 +75,16 @@
 				{{ .Director.Description.Value }}
 			</p>
 		</div>
+	</div>
+	<div class="movies">
+		{{ range .Director.Movies }}
+			<div class="movie">
+				<a href="movie?id={{ .ID }}" style="text-decoration: none; color: inherit;">
+					<h2>{{ .Name.Value }}</h2>
+					<p>Year: {{ .Year }}</p>
+				</a>
+			</div>
+		{{ end }}
 	</div>
 </div>
 

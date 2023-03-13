@@ -13,6 +13,7 @@ type Director struct {
 	Name sql.NullString `sql:"name"`
 	Img sql.NullString `sql:"img"`
 	Description sql.NullString `sql:"description"`
+	Movies []Movie
 }
 
 func GetDirector(id int) (Director, error) {
@@ -32,6 +33,7 @@ func GetDirector(id int) (Director, error) {
 	if err != nil {
 		logger.Printf("structs.GetDirector(); row.Scan()| %v\n", err)
 	}
+	director.Movies = GetMoviesOfDirector(director.ID)
 
 	return director, err
 }

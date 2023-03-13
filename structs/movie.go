@@ -83,6 +83,38 @@ func GetMovies(user_id int) ([]Movie, error) {
 	return movies, nil
 }
 
+func GetMoviesOfDirector(director_id int) []Movie {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+	
+	var movies []Movie
+
+	db := data.DBConnection()
+	defer db.Close()
+
+	rows, err := db.Query("SELECT id, name, year FROM movies WHERE director_id = ? ORDER BY year DESC", director_id)
+	if err != nil {
+		logger.Printf("structs.GetMovies(); db.Query(`SELECT`)| %v\n", err)
+		return movies
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		movie := Movie{}
+		err := rows.Scan(&movie.ID, &movie.Name, &movie.Year)
+		if err != nil {
+			logger.Printf("structs.GetMovies(); rows.Scan()| %v\n", err)
+			return movies
+		}
+		movies = append(movies, movie)
+	}
+
+	return movies
+}
+
 func (movie *Movie) CountRating() {
 	db := data.DBConnection()
 	defer db.Close()
