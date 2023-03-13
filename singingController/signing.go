@@ -3,7 +3,7 @@ package singingController
 import (
 	"database/sql"
 	"net/http"
-	"fmt"
+	"regexp"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
@@ -13,6 +13,22 @@ import (
 )
 
 type User = structs.User
+
+func ValidateEmail(email string) bool {
+	emailRegexp := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	if !emailRegexp.MatchString(email) {
+		return false
+	}
+	return true
+}
+
+func ValidatePassword(password string) bool {
+	passwordRegexp := regexp.MustCompile(`^[a-zA-Z0-9]*[a-zA-Z][0-9]+[a-zA-Z0-9]*$`)
+	if !passwordRegexp.MatchString(password) {
+		return false
+	}
+	return true
+}
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 	logger, logFile, err := h.CreateLogger()
@@ -29,11 +45,25 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Printf("singingController.SignUpHandler(); r.ParseForm()| %v\n", err)
 		}
 
+		isValidPass := ValidatePassword(r.Form.Get("password"))
+		if ! isValidPass {
+			resp := structs.Response{}
+			resp.Message = "password should be at least 8 characters long and contain at least one letter and one digit"
+			h.Templating(w, "signup", "sign_layout", resp)
+			return
+		}
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Form.Get("password")), bcrypt.DefaultCost)
 		if err != nil {
 			logger.Printf("singingController.SignUpHandler(); bcrypt.GenerateFromPassword()| %v\n", err)
 		}
 
+		isValidEmail := ValidateEmail(r.Form.Get("email"))
+		if ! isValidEmail {
+			resp := structs.Response{}
+			resp.Message = "invalid email"
+			h.Templating(w, "signup", "sign_layout", resp)
+			return
+		}
 		user := User{
 			Name: sql.NullString{String: r.Form.Get("name"), Valid: true},
 			Email: sql.NullString{String: r.Form.Get("email"), Valid: true},
@@ -68,14 +98,31 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 			logger.Printf("singingController.SignInHandler(); r.ParseForm()| %v\n", err)
 		}
 
+		isValidEmail := ValidateEmail(r.Form.Get("email"))
+		if ! isValidEmail {
+			resp := structs.Response{}
+			resp.Message = "invalid email"
+			h.Templating(w, "signin", "sign_layout", resp)
+			return
+		}
+		isValidPass := ValidatePassword(r.Form.Get("password"))
+		if ! isValidPass {
+			resp := structs.Response{}
+			resp.Message = "password should be at least 8 characters long and contain at least one letter and one digit"
+			h.Templating(w, "signin", "sign_layout", resp)
+			return
+		}
+
 		userId, err := structs.GetUserIDLogin(r.Form.Get("email"), r.Form.Get("password"))
 		if err != nil {
 			logger.Printf("singingController.SignInHandler(); structs.GetUserIDLogin()| %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+
+			resp := structs.Response{}
+			resp.Message = "inccorrect email or password"
+			h.Templating(w, "signin", "sign_layout", resp)
+			return
 		}
-		if userId == 0 {
-			fmt.Println(userId)
-		} else {
+		if userId != 0 {
 			user, err := structs.GetUser(userId)
 			if err != nil {
 				logger.Printf("singingController.SignInHandler(); structs.GetUser()| %v\n", err)
