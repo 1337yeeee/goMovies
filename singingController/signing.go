@@ -3,8 +3,8 @@ package singingController
 import (
 	"database/sql"
 	"net/http"
-	"log"
 	"fmt"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 	"movies_crud/structs"
@@ -15,17 +15,23 @@ import (
 type User = structs.User
 
 func SignUpHandler(w http.ResponseWriter, r *http.Request) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	if r.Method == "GET" {
 		h.Templating(w, "signup", "sign_layout")
 	} else {
 		err := r.ParseForm()
 		if err != nil {
-			log.Printf("singingController.SignUpHandler(); r.ParseForm()| %v\n", err)
+			logger.Printf("singingController.SignUpHandler(); r.ParseForm()| %v\n", err)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(r.Form.Get("password")), bcrypt.DefaultCost)
 		if err != nil {
-			log.Printf("singingController.SignUpHandler(); bcrypt.GenerateFromPassword()| %v\n", err)
+			logger.Printf("singingController.SignUpHandler(); bcrypt.GenerateFromPassword()| %v\n", err)
 		}
 
 		user := User{
@@ -48,17 +54,23 @@ func SignUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SignInHandler(w http.ResponseWriter, r *http.Request) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	if r.Method == "GET" {
 		h.Templating(w, "signin", "sign_layout")
 	} else if r.Method == "POST" {
 		err := r.ParseForm()
 		if err != nil {
-			log.Printf("singingController.SignInHandler(); r.ParseForm()| %v\n", err)
+			logger.Printf("singingController.SignInHandler(); r.ParseForm()| %v\n", err)
 		}
 
 		userId, err := structs.GetUserIDLogin(r.Form.Get("email"), r.Form.Get("password"))
 		if err != nil {
-			log.Printf("singingController.SignInHandler(); structs.GetUserIDLogin()| %v\n", err)
+			logger.Printf("singingController.SignInHandler(); structs.GetUserIDLogin()| %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		if userId == 0 {
@@ -66,7 +78,7 @@ func SignInHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			user, err := structs.GetUser(userId)
 			if err != nil {
-				log.Printf("singingController.SignInHandler(); structs.GetUser()| %v\n", err)
+				logger.Printf("singingController.SignInHandler(); structs.GetUser()| %v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 

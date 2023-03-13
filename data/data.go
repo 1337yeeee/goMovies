@@ -5,16 +5,23 @@ import (
 	"io/ioutil"
 	"log"
 
+	h "movies_crud/helper"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var DbName string
 
 func Init(dbName string) error {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	DbName = dbName
 	db, err := sql.Open("sqlite3", DbName)
 	if err != nil {
-		log.Printf("data.Init(); sql.Open()| %v\n", err)
+		logger.Printf("data.Init(); sql.Open()| %v\n", err)
 		return err
 	}
 	defer db.Close()
@@ -58,35 +65,47 @@ func Init(dbName string) error {
 	`)
 	
 	if err != nil {
-		log.Printf("data.Init(); db.Exec(`!ALL!`)| %v\n", err)
+		logger.Printf("data.Init(); db.Exec(`!ALL!`)| %v\n", err)
 	}
 	return err
 }
 
 func DBConnection() *sql.DB {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	db, err := sql.Open("sqlite3", DbName)
 	if err != nil {
-		log.Printf("data.DBConnection(); sql.Open()| %v\n", err)
+		logger.Printf("data.DBConnection(); sql.Open()| %v\n", err)
 		panic(err)
 	}
 	return db
 }
 
 func ExecuteSQLFile(fileName string) error {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	db := DBConnection()
 	defer db.Close()
 
 	// Read SQL file
 	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		log.Printf("data.ExecuteSQLFile(); ioutil.ReadFile()| %v\n", err)
+		logger.Printf("data.ExecuteSQLFile(); ioutil.ReadFile()| %v\n", err)
 		return err
 	}
 
 	// Execute SQL statements
 	_, err = db.Exec(string(content))
 	if err != nil {
-		log.Printf("data.ExecuteSQLFile(); db.Exec(content)| %v\n", err)
+		logger.Printf("data.ExecuteSQLFile(); db.Exec(content)| %v\n", err)
 		return err
 	}
 

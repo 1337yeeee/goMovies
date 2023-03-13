@@ -25,23 +25,22 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	h.Templating(w, "index", "base", resp)
 }
 
-func setLogger() {
-	f, err := os.OpenFile("errors.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-    if err != nil {
-        log.Fatal(err)
-    }
-    defer f.Close()
-
-    log.SetOutput(f)
-}
-
 func main() {
-	setLogger()
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
+
+	LogFileName := os.Getenv("LOGFILE")
+	if LogFileName == "" {
+		LogFileName = "tmp.log"
+	}
+	h.SetLogFileName(LogFileName)
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatalf("Error creating logger: %v", err)
+	}
+
 	dbName := os.Getenv("DB_FILE_NAME")
 	if dbName == "" {
 		dbName = "tmp.db"
@@ -49,8 +48,9 @@ func main() {
 
 	err = data.Init(dbName)
 	if err != nil {
-		log.Printf("main; data.Init()| %v\n", err)
+		logger.Printf("main; data.Init()| %v\n", err)
 	}
+	h.CloseLogger(logFile)
 
 
 	fs := http.FileServer(http.Dir("assets"))

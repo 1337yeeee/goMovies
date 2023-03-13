@@ -5,6 +5,7 @@ import (
 
 	"database/sql"
 	"movies_crud/data"
+	h "movies_crud/helper"
 )
 
 type Director struct {
@@ -15,15 +16,21 @@ type Director struct {
 }
 
 func GetDirector(id int) (Director, error) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	db := data.DBConnection()
 	defer db.Close()
 
 	row := db.QueryRow("SELECT id, name, img, description FROM directors WHERE id = ?", id)
 
 	director := Director{}
-	err := row.Scan(&director.ID, &director.Name, &director.Img, &director.Description)
+	err = row.Scan(&director.ID, &director.Name, &director.Img, &director.Description)
 	if err != nil {
-		log.Printf("structs.GetDirector(); row.Scan()| %v\n", err)
+		logger.Printf("structs.GetDirector(); row.Scan()| %v\n", err)
 	}
 
 	return director, err

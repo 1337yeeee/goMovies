@@ -15,6 +15,12 @@ type Movie = structs.Movie
 type Response = structs.Response
 
 func MovieIndexHandler(w http.ResponseWriter, r *http.Request) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	movie_idSTR := r.URL.Query().Get("id")
 	if movie_idSTR == "" {
 		response := structs.Response{}
@@ -26,11 +32,11 @@ func MovieIndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	movie_id, err := strconv.Atoi(movie_idSTR)
 	if err != nil {
-		log.Printf("moviesController.MovieIndexHandler(); strconv.Atoi()| %v\n", err)
+		logger.Printf("moviesController.MovieIndexHandler(); strconv.Atoi()| %v\n", err)
 	}
 	movie, err := structs.GetMovie(movie_id)
 	if err != nil {
-		log.Printf("moviesController.MovieIndexHandler(); structs.GetMovie()| %v\n", err)
+		logger.Printf("moviesController.MovieIndexHandler(); structs.GetMovie()| %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	movie.CountRating()
@@ -49,11 +55,17 @@ func MovieIndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func MoviesIndexHandler(w http.ResponseWriter, r *http.Request) {
+	var err error
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	resp := Response{}
 	resp.User = cookie.GetUserCookie(w, r)
 
 	var movies []Movie
-	var err error
 
 	if resp.User != nil {
 		movies, err = structs.GetMovies(resp.User.ID)
@@ -61,7 +73,7 @@ func MoviesIndexHandler(w http.ResponseWriter, r *http.Request) {
 		movies, err = structs.GetMovies(0)
 	}
 	if err != nil {
-		log.Printf("moviesController.MoviesIndexHandler(); structs.GetMovies(isUser=%b)| %v\n", resp.User != nil, err)
+		logger.Printf("moviesController.MoviesIndexHandler(); structs.GetMovies(isUser=%b)| %v\n", resp.User != nil, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 	resp.Movies = movies
@@ -70,19 +82,25 @@ func MoviesIndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Watched(w http.ResponseWriter, r *http.Request) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	userID := cookie.GetUserCookieIDonly(r)
 
 	movieIDStr := r.URL.Query().Get("movie_id")
 	movieID, err := strconv.Atoi(movieIDStr)
 	if err != nil {
-		log.Printf("moviesController.Watched(); strconv.Atoi()| %v\n", err)
+		logger.Printf("moviesController.Watched(); strconv.Atoi()| %v\n", err)
 		http.Error(w, "Invalid movie ID", http.StatusBadRequest)
 		return
 	}
 
 	watched, err := structs.DealWithWatched(userID, movieID)
 	if err != nil {
-		log.Printf("moviesController.Watched(); structs.DealWithWatched()| %v\n", err)
+		logger.Printf("moviesController.Watched(); structs.DealWithWatched()| %v\n", err)
 		http.Error(w, "Failed to handle watched status", http.StatusInternalServerError)
 		return
 	}
@@ -93,23 +111,32 @@ func Watched(w http.ResponseWriter, r *http.Request) {
 		Watched: watched,
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		logger.Printf("moviesController.Watched(); json.NewEncoder(w)| %v\n", err)
+	}
 }
 
 func Rated(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
+	logger, logFile, err := h.CreateLogger()
 	if err != nil {
-		log.Printf("moviesController.Rated(); r.ParseForm()| %v\n", err)
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+	
+	err = r.ParseForm()
+	if err != nil {
+		logger.Printf("moviesController.Rated(); r.ParseForm()| %v\n", err)
 	}
 
 	movie_id, err := strconv.Atoi(r.Form.Get("movie_id"))
 	if err != nil {
-		log.Printf("moviesController.Rated(); strconv.Atoi(movie_id)| %v\n", err)
+		logger.Printf("moviesController.Rated(); strconv.Atoi(movie_id)| %v\n", err)
 		return
 	}
 	rating, err := strconv.Atoi(r.Form.Get("rating"))
 	if err != nil {
-		log.Printf("moviesController.Rated(); strconv.Atoi(rating)| %v\n", err)
+		logger.Printf("moviesController.Rated(); strconv.Atoi(rating)| %v\n", err)
 		return 
 	}
 
@@ -118,7 +145,7 @@ func Rated(w http.ResponseWriter, r *http.Request) {
 	structs.SetMovieRating(userID, movie_id, rating)
 
 	if err != nil {
-		log.Printf("moviesController.Rated(); structs.SetMovieRating()| %v\n", err)
+		logger.Printf("moviesController.Rated(); structs.SetMovieRating()| %v\n", err)
 		return 
 	}
 
@@ -128,5 +155,8 @@ func Rated(w http.ResponseWriter, r *http.Request) {
 		Rating: rating,
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		logger.Printf("moviesController.Rated(); json.NewEncoder(w)| %v\n", err)
+	}
 }

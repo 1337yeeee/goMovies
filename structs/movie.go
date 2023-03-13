@@ -6,6 +6,7 @@ import (
 
 	"database/sql"
 	"movies_crud/data"
+	h "movies_crud/helper"
 )
 
 type Movie struct {
@@ -21,6 +22,12 @@ type Movie struct {
 }
 
 func GetMovie(id int) (Movie, error) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+
 	db := data.DBConnection()
 	defer db.Close()
 
@@ -28,9 +35,9 @@ func GetMovie(id int) (Movie, error) {
 
 	movie := Movie{}
 	var director_id int
-	err := row.Scan(&movie.ID, &movie.Name, &movie.Year, &movie.Description, &movie.Img, &movie.Country, &director_id)
+	err = row.Scan(&movie.ID, &movie.Name, &movie.Year, &movie.Description, &movie.Img, &movie.Country, &director_id)
 	if err != nil {
-		log.Printf("structs.GetMovie(); row.Scan()| %v\n", err)
+		logger.Printf("structs.GetMovie(); row.Scan()| %v\n", err)
 	}
 	if director_id != 0 {
 		director, _ := GetDirector(director_id)
@@ -41,6 +48,12 @@ func GetMovie(id int) (Movie, error) {
 }
 
 func GetMovies(user_id int) ([]Movie, error) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+	
 	var movies []Movie
 
 	db := data.DBConnection()
@@ -48,7 +61,7 @@ func GetMovies(user_id int) ([]Movie, error) {
 
 	rows, err := db.Query("SELECT id, name, year, description, img FROM movies ORDER BY year DESC")
 	if err != nil {
-		log.Printf("structs.GetMovies(); db.Query(`SELECT`)| %v\n", err)
+		logger.Printf("structs.GetMovies(); db.Query(`SELECT`)| %v\n", err)
 		return movies, err
 	}
 	defer rows.Close()
@@ -57,7 +70,7 @@ func GetMovies(user_id int) ([]Movie, error) {
 		movie := Movie{}
 		err := rows.Scan(&movie.ID, &movie.Name, &movie.Year, &movie.Description, &movie.Img)
 		if err != nil {
-			log.Printf("structs.GetMovies(); rows.Scan()| %v\n", err)
+			logger.Printf("structs.GetMovies(); rows.Scan()| %v\n", err)
 			return movies, err
 		}
 		movie.CountRating()

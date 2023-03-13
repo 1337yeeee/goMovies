@@ -11,6 +11,12 @@ import (
 )
 
 func DirectorIndexHandler(w http.ResponseWriter, r *http.Request) {
+	logger, logFile, err := h.CreateLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer h.CloseLogger(logFile)
+	
 	director_idSTR := r.URL.Query().Get("id")
 	if director_idSTR == "" {
 		response := structs.Response{}
@@ -23,7 +29,7 @@ func DirectorIndexHandler(w http.ResponseWriter, r *http.Request) {
 	director_id, _ := strconv.Atoi(director_idSTR)
 	director, err := structs.GetDirector(director_id)
 	if err != nil {
-		log.Printf("moviesController.Rated(); structs.GetDirector()| %v\n", err)
+		logger.Printf("moviesController.Rated(); structs.GetDirector()| %v\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
