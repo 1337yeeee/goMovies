@@ -1,6 +1,6 @@
 # goMovies
 
-goMovies is a movie management web application that allows you to create, read, update, and delete information about movies and directors. You can also set a rating and watched status for each movie. The application also includes an authorization system to secure access to the data.
+goMovies is a movie management web application that allows you to read information about movies and directors. You can also set a rating and watched status for each movie. The application also includes an authorization system to secure access to the data.
 
 ## Features
 
